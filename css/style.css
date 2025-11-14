@@ -108,7 +108,7 @@ main {
   /* keep your existing background */
   padding: 30px 20px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   text-align: center;
   margin-top: 50px;   /* optional spacing above footer */
   color: var(--muted);
