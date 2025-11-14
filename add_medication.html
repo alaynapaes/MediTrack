@@ -3,24 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Medication</title>
+
+    <!-- Main styles -->
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Page-specific styling -->
+    <style>
+
+        body {
+            background: linear-gradient(180deg, var(--bg), #fff);
+            padding: 20px;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        /* Card container */
+        .form-card {
+            background: var(--card);
+            width: 100%;
+            max-width: 650px;
+            margin: auto;
+            padding: 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Full-width grid items */
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 4px var(--accent);
+        }
+
+        .btn-save {
+            padding: 14px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            color: #222;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            width: 100%;
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 18px;
+            font-weight: 600;
+            color: var(--accent);
+            display: block;
+        }
+
+        /* RESPONSIVE CSS GRID */
+        @media (max-width: 700px) {
+            .form-card {
+                grid-template-columns: 1fr;
+                padding: 22px;
+            }
+        }
+
+    </style>
+
     <script defer src="js/script.js"></script>
 </head>
+
 <body>
-    <h1>Add Medication</h1>
 
-    <label>Medicine Name:</label><br>
-    <input id="medName"><br><br>
+    <h1 class="page-title">Add Medication</h1>
 
-    <label>Dosage:</label><br>
-    <input id="medDose"><br><br>
+    <div class="form-card">
 
-    <label>Time (HH:MM):</label><br>
-    <input type="time" id="medTime"><br><br>
+        <div class="full">
+            <label>Medicine Name</label>
+            <input id="medName" placeholder="Eg: Paracetamol">
+        </div>
 
-    <label>Frequency (Daily/Weekly):</label><br>
-    <input id="medFreq"><br><br>
+        <div>
+            <label>Dosage</label>
+            <input id="medDose" placeholder="Eg: 500 mg">
+        </div>
 
-    <button onclick="saveMedication()">Save Medication</button>
+        <div>
+            <label>Time</label>
+            <input type="time" id="medTime">
+        </div>
+
+        <div class="full">
+            <label>Frequency</label>
+            <select id="medFreq">
+                <option value="">Select frequency</option>
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+            </select>
+        </div>
+
+        <div class="full">
+            <button class="btn-save" onclick="saveMedication()">Save Medication</button>
+        </div>
+
+        <a href="index.html" class="back-link full">← Back to Home</a>
+
+    </div>
+
+    <footer class="site-footer">
+  <div class="footer-content">
+    <p>&copy; 2025 MedReminder. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="add_medication.html">Add Medication</a>
+      <a href="add_vaccine.html">Add Vaccine</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
