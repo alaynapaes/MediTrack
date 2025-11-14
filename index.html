@@ -1,43 +1,81 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Medication & Vaccination Reminder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Medication & Vaccination Reminder — Home</title>
+
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="styles.css"/>
-    <script defer src="js/script.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script defer src="js/header.js"></script>
+  <script defer src="js/app.js"></script>
 </head>
 <body>
+    <div id="header-container"></div>
 
-    <div id="header"></div>
 
-      <section class="photo">
-    <header>
-      <h1> <span class="highlight">Medication & Vaccination Reminder</span>: <span class ="about-me"></span></h1>
-      <p>Your Virtual Companion in Home Care</p>
-    </header>
-    <script src="prev_files/prev_script.js"></script>
-    <script src="prev_files/header.js"></script>
-    
-    <button onclick="location.href='add_medication.html'">Add Medication</button>
-    <button onclick="location.href='add_vaccine.html'">Add Vaccination</button>
+  <main>
+    <section class="hero">
+      <div class="hero-left">
+        <h1>Gentle, friendly reminders for health.</h1>
+        <p>Never miss a medication or vaccination. Simple cards, clear times, and calm colours to keep you on track.</p>
 
-    <h2>Upcoming Medications:</h2>
-    <div id="medList"></div>
+        <div class="hero-actions">
+          <button class="primary" onclick="location.href='add_medication.html'">➕ Add Medication</button>
+          <button class="secondary" onclick="location.href='add_vaccine.html'">💉 Add Vaccination</button>
+        </div>
 
-    <h2>Upcoming Vaccinations:</h2>
-    <div id="vaccineList"></div>
-  </section>
-  </section>
-    <!--<h1>Medication & Vaccination Reminder</h1>-->
+        <div style="margin-top:16px;color:var(--muted);font-size:13px">Tip: Click any reminder to mark as taken or snooze.</div>
+      </div>
 
-    <button onclick="location.href='add_medication.html'">Add Medication</button>
-    <button onclick="location.href='add_vaccine.html'">Add Vaccination</button>
+      <div class="hero-right">
+        <div class="stat">
+          <h3 id="todayCount">0</h3>
+          <p>Reminders today</p>
+        </div>
+        <div class="stat">
+          <h3 id="upcomingCount">0</h3>
+          <p>Upcoming items</p>
+        </div>
+      </div>
+    </section>
 
-    <h2>Upcoming Medications:</h2>
-    <div id="medList"></div>
+    <div class="content">
+      <div class="grid">
+        
+        <div class="card">
+          <div class="section-title">Upcoming Medications</div>
+          <div id="medList" class="reminder-list">
+            <div class="empty">No medications scheduled. Add one to get started ✨</div>
+          </div>
+        </div>
 
-    <h2>Upcoming Vaccinations:</h2>
-    <div id="vaccineList"></div>
+        <div class="card">
+          <div class="section-title">Upcoming Vaccinations</div>
+          <div id="vaccineList" class="reminder-list">
+            <div class="empty">No vaccinations scheduled. Add one to get started 🌼</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+<footer class="site-footer">
+  <div class="footer-content">
+    <p>&copy; 2025 MedReminder. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="add_medication.html">Add Medication</a>
+      <a href="add_vaccine.html">Add Vaccine</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+</footer>
+  <script src="js/home.js"></script>
+
 </body>
 </html>
