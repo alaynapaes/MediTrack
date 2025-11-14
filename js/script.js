@@ -1,6 +1,5 @@
-// Load reminders on home page
+// Request permission immediately
 window.onload = function () {
-
     requestNotificationPermission();
     startReminderCheck();
 };
@@ -12,33 +11,18 @@ function saveMedication() {
     const time = document.getElementById('medTime').value.trim();
     const frequency = document.getElementById('medFreq').value.trim();
 
-    // Validate required fields
     if (!name || !dose || !time || !frequency) {
         alert("Please fill in all fields: Name, Dosage, Time, and Frequency.");
-        return; // Stop saving if any field is empty
+        return;
     }
 
-    // Get existing medications from localStorage
     let meds = JSON.parse(localStorage.getItem("medications")) || [];
-
-    // Create medication object
-    const medication = {
-        name: name,
-        dose: dose,
-        time: time,
-        frequency: frequency,
-        color: "" // optional
-    };
-
-    // Save to localStorage
-    meds.push(medication);
+    meds.push({ name, dose, time, frequency, color: "" });
     localStorage.setItem("medications", JSON.stringify(meds));
 
     alert("Medication saved successfully!");
-    window.location.href = "index.html"; // redirect back to home page
+    window.location.href = "index.html";
 }
-
-
 
 // Save Vaccine
 function saveVaccine() {
@@ -52,46 +36,14 @@ function saveVaccine() {
     }
 
     let vacc = JSON.parse(localStorage.getItem("vaccines")) || [];
-
-    const vaccine = {
-        name: name,
-        date: date,
-        notes: notes
-    };
-
-    vacc.push(vaccine);
+    vacc.push({ name, date, notes });
     localStorage.setItem("vaccines", JSON.stringify(vacc));
 
     alert("Vaccination saved!");
     window.location.href = "index.html";
 }
 
-
-
-// Load Medications
-function loadMedications() {
-    let meds = JSON.parse(localStorage.getItem("medications")) || [];
-    let container = document.getElementById("medList");
-    container.innerHTML = "";
-
-    meds.forEach(m => {
-        container.innerHTML += `<div>${m.name} - ${m.dose} - ${m.time} - ${m.freq}</div>`;
-    });
-}
-
-// Load Vaccines
-function loadVaccines() {
-    let vaccines = JSON.parse(localStorage.getItem("vaccines")) || [];
-    let container = document.getElementById("vaccineList");
-    container.innerHTML = "";
-
-    vaccines.forEach(v => {
-        container.innerHTML += `<div>${v.name} - ${v.date} - ${v.dose}</div>`;
-    });
-}
-
-// --------- Notifications ---------
-
+// Notifications
 function requestNotificationPermission() {
     if ("Notification" in window && Notification.permission !== "granted") {
         Notification.requestPermission();
@@ -104,10 +56,24 @@ function sendNotification(title, body) {
     }
 }
 
+function sendSMS(message) {
+    // Replace with actual user phone
+    const phone = "+917758047172";
+
+    fetch("http://localhost:3000/send-sms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, message })
+    }).then(res => console.log("SMS sent"))
+      .catch(err => console.error("SMS error:", err));
+}
+
 function startReminderCheck() {
-    setInterval(() => {
-        let now = new Date();
-        let currentTime = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
+    function checkReminders() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2,'0');
+        const minutes = String(now.getMinutes()).padStart(2,'0');
+        const currentTime = `${hours}:${minutes}`;
 
         let meds = JSON.parse(localStorage.getItem("medications")) || [];
         meds.forEach(m => {
@@ -115,5 +81,17 @@ function startReminderCheck() {
                 sendNotification("Medicine Reminder", `Time to take: ${m.name} (${m.dose})`);
             }
         });
-    }, 60000); // checks every minute
+
+        let vacc = JSON.parse(localStorage.getItem("vaccines")) || [];
+        vacc.forEach(v => {
+            const today = now.toISOString().split('T')[0]; // YYYY-MM-DD
+            if (v.date === today) {
+                sendNotification("Vaccine Reminder", `Today: ${v.name}`);
+            }
+        });
+    }
+
+    // check immediately and then every minute
+    checkReminders();
+    setInterval(checkReminders, 60000);
 }

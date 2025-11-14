@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Paracetamol",
+    "phone": "+91YOUR_PHONE_NUMBER",
+    "time": "09:00",
+    "message": "Time to take Paracetamol!"
+  },
+  {
+    "name": "Vitamin D",
+    "phone": "+91YOUR_PHONE_NUMBER",
+    "time": "18:00",
+    "message": "Time to take Vitamin D!"
+  }
+]
