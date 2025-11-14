@@ -45,7 +45,7 @@ function loadMedications() {
     container.innerHTML = "";
 
     meds.forEach(m => {
-        container.innerHTML += <div>${m.name} - ${m.dose} - ${m.time} - ${m.freq}</div>;
+        container.innerHTML += `<div>${m.name} - ${m.dose} - ${m.time} - ${m.freq}</div>`;
     });
 }
 
@@ -56,7 +56,7 @@ function loadVaccines() {
     container.innerHTML = "";
 
     vaccines.forEach(v => {
-        container.innerHTML += <div>${v.name} - ${v.date} - ${v.notes}</div>;
+        container.innerHTML += `<div>${v.name} - ${v.date} - ${v.notes}</div>`;
     });
 }
 
