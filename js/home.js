@@ -6,55 +6,80 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log("Loaded meds:", meds);
     console.log("Loaded vacc:", vacc);
 
-    function createReminderEl(item){
-        const el = document.createElement('div'); 
-        el.className='reminder';
+    function createReminderEl(item, type, index){
+    const el = document.createElement('div');
+    el.className = 'reminder';
 
-        const pill = document.createElement('div'); 
-        pill.className='pill'; 
-        pill.textContent = item.name.split(' ')[0];
-        pill.style.background = item.color || '';
+    const pill = document.createElement('div');
+    pill.className = 'pill';
+    pill.textContent = item.name.split(' ')[0];
+    pill.style.background = item.color || '';
 
-        const body = document.createElement('div'); 
-        body.className='rem-body';
+    const body = document.createElement('div');
+    body.className = 'rem-body';
 
-        const h = document.createElement('h4'); 
-        h.textContent = item.name + (item.dose ? (' — '+item.dose) : '');
+    const h = document.createElement('h4');
+    h.textContent = item.name + (item.dose ? (' — '+item.dose) : '');
+    const p = document.createElement('p');
+    p.textContent = item.time ? item.time : (item.date ? item.date : 'No time');
 
-        const p = document.createElement('p'); 
-        p.textContent = item.time ? item.time : (item.date ? item.date : 'No time');
+    body.appendChild(h);
+    body.appendChild(p);
 
-        body.appendChild(h); 
-        body.appendChild(p);
+    const meta = document.createElement('div'); 
+    meta.className = 'rem-meta'; 
 
-        const meta = document.createElement('div'); 
-        meta.className='rem-meta'; 
-        meta.innerHTML = "<button style='border:none;background:transparent;cursor:pointer;font-weight:600'>Mark</button>";
+    const dismissBtn = document.createElement('button');
+    dismissBtn.textContent = 'Dismiss';
+    dismissBtn.style.cssText = `
+        border: none;
+        background: var(--accent-2);
+        color: #222;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    `;
 
-        el.appendChild(pill); 
-        el.appendChild(body); 
-        el.appendChild(meta);
+    dismissBtn.addEventListener('click', () => {
+        if(type === 'med') {
+            meds.splice(index, 1);
+            localStorage.setItem('medications', JSON.stringify(meds));
+        } else if(type === 'vac') {
+            vacc.splice(index, 1);
+            localStorage.setItem('vaccines', JSON.stringify(vacc));
+        }
+        render();
+    });
 
-        return el;
-    }
+    meta.appendChild(dismissBtn);
+
+    el.appendChild(pill);
+    el.appendChild(body);
+    el.appendChild(meta);
+
+    return el;
+}
+
 
     function render(){
-        const medList = document.getElementById('medList');
-        if(meds.length === 0) {
-            medList.innerHTML = '<div class="empty">No medications scheduled. Add one to get started ✨</div>';
-        } else {
-            medList.innerHTML = '';
-            meds.forEach(m => medList.appendChild(createReminderEl(m)));
-        }
-
-        const vacList = document.getElementById('vaccineList');
-        if(vacc.length === 0) {
-            vacList.innerHTML = '<div class="empty">No vaccinations scheduled. Add one to get started 🌼</div>';
-        } else {
-            vacList.innerHTML = '';
-            vacc.forEach(v => vacList.appendChild(createReminderEl(v)));
-        }
+    const medList = document.getElementById('medList');
+    if(meds.length === 0) {
+        medList.innerHTML = '<div class="empty">No medications scheduled. Add one to get started ✨</div>';
+    } else {
+        medList.innerHTML = '';
+        meds.forEach((m, idx) => medList.appendChild(createReminderEl(m, 'med', idx)));
     }
+
+    const vacList = document.getElementById('vaccineList');
+    if(vacc.length === 0) {
+        vacList.innerHTML = '<div class="empty">No vaccinations scheduled. Add one to get started 🌼</div>';
+    } else {
+        vacList.innerHTML = '';
+        vacc.forEach((v, idx) => vacList.appendChild(createReminderEl(v, 'vac', idx)));
+    }
+}
+
 
     render();
 });
