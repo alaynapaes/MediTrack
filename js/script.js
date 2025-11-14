@@ -105,15 +105,21 @@ function sendNotification(title, body) {
 }
 
 function startReminderCheck() {
-    setInterval(() => {
-        let now = new Date();
-        let currentTime = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
+    checkReminders(); // check immediately
 
-        let meds = JSON.parse(localStorage.getItem("medications")) || [];
-        meds.forEach(m => {
-            if (m.time === currentTime) {
-                sendNotification("Medicine Reminder", `Time to take: ${m.name} (${m.dose})`);
-            }
-        });
-    }, 60000); // checks every minute
+    setInterval(checkReminders, 60000); // then every minute
+}
+
+function checkReminders() {
+    let now = new Date();
+    let currentTime = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+
+    let meds = JSON.parse(localStorage.getItem("medications")) || [];
+    meds.forEach(m => {
+        if (!m.notified && currentTime >= m.time) {
+            sendNotification("Medicine Reminder", `Time to take: ${m.name} (${m.dose})`);
+            m.notified = true;
+        }
+    });
+    localStorage.setItem("medications", JSON.stringify(meds));
 }

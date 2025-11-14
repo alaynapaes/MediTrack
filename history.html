@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Medication History — MediTrack</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <script defer src="js/history.js"></script>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main>
+    <section class="content">
+    <div class="card">
+        <div class="section-title">Medication and Vaccination History</div>
+
+        <!-- Clear History Button -->
+    <button id="clearHistoryBtn" class="secondary" style="margin-bottom:10px;">Clear History</button>
+    <div id="historyList" class="reminder-list">
+        <div class="empty">No history yet.</div>
+        </div>
+    </div>
+    </section>
+</main>
+
+
+    <footer class="site-footer">
+    <div class="footer-content">
+        <p>&copy; 2025 MediTrack. All rights reserved.</p>
+        <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="add_medication.html">Add Medication</a>
+        <a href="add_vaccine.html">Add Vaccine</a>
+        <a href="#">Contact</a>
+        </div>
+    </div>
+    </footer>
+    <script>
+    window.addEventListener('DOMContentLoaded', () => {
+    const historyList = document.getElementById('historyList');
+    const clearBtn = document.getElementById('clearHistoryBtn');
+
+  // Function to render the history list
+    function renderHistory() {
+        const history = JSON.parse(localStorage.getItem('history')) || [];
+
+        if(history.length === 0) {
+        historyList.innerHTML = '<div class="empty">No history yet.</div>';
+        return;
+    }
+
+    historyList.innerHTML = '';
+    history.forEach(med => {
+        const el = document.createElement('div');
+        el.className = 'reminder history-item';
+
+        const pill = document.createElement('div');
+        pill.className = 'pill';
+        pill.textContent = med.name.split(' ')[0];
+
+        const body = document.createElement('div');
+        body.className = 'rem-body';
+        const h = document.createElement('h4');
+        h.textContent = `${med.name} — ${med.dose}`;
+        const p = document.createElement('p');
+        p.textContent = med.time || 'No time';
+        body.appendChild(h);
+        body.appendChild(p);
+
+        el.appendChild(pill);
+        el.appendChild(body);
+        historyList.appendChild(el);
+    });
+    }
+
+  // Initial render
+    renderHistory();
+
+  // Clear history button handler
+    clearBtn.addEventListener('click', () => {
+    if(confirm("Are you sure you want to clear all history?")) {
+      // Remove history from localStorage
+        localStorage.removeItem('history');
+
+      // Re-render the page (will show "No history yet")
+        renderHistory();
+    }
+    });
+});
+</script>
+
+
+
+    <script>
+    window.addEventListener('DOMContentLoaded', () => {
+    const historyList = document.getElementById('historyList');
+    const history = JSON.parse(localStorage.getItem('history')) || [];
+
+    if(history.length === 0) {
+        historyList.innerHTML = '<div class="empty">No history yet.</div>';
+        return;
+    }
+
+    historyList.innerHTML = '';
+
+    history.forEach(med => {
+        const el = document.createElement('div');
+        el.className = 'reminder history-item';
+
+        const pill = document.createElement('div');
+        pill.className = 'pill';
+        pill.textContent = med.name.split(' ')[0];
+
+        const body = document.createElement('div');
+        body.className = 'rem-body';
+        const h = document.createElement('h4');
+        h.textContent = `${med.name} — ${med.dose}`;
+        const p = document.createElement('p');
+        p.textContent = med.time || 'No time';
+        body.appendChild(h);
+        body.appendChild(p);
+
+        el.appendChild(pill);
+        el.appendChild(body);
+        historyList.appendChild(el);
+    });
+    });
+</script>
+
+</body>
+</html>
