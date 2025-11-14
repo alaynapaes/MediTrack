@@ -1,7 +1,5 @@
 // Load reminders on home page
 window.onload = function () {
-    if (document.getElementById("medList")) loadMedications();
-    if (document.getElementById("vaccineList")) loadVaccines();
 
     requestNotificationPermission();
     startReminderCheck();
@@ -19,9 +17,11 @@ function saveMedication() {
     });
 
     localStorage.setItem("medications", JSON.stringify(meds));
+
     alert("Medication Saved!");
     location.href = "index.html";
 }
+
 
 // Save Vaccine
 function saveVaccine() {
