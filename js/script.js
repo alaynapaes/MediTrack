@@ -7,36 +7,66 @@ window.onload = function () {
 
 // Save Medication
 function saveMedication() {
+    const name = document.getElementById('medName').value.trim();
+    const dose = document.getElementById('medDose').value.trim();
+    const time = document.getElementById('medTime').value.trim();
+    const frequency = document.getElementById('medFreq').value.trim();
+
+    // Validate required fields
+    if (!name || !dose || !time || !frequency) {
+        alert("Please fill in all fields: Name, Dosage, Time, and Frequency.");
+        return; // Stop saving if any field is empty
+    }
+
+    // Get existing medications from localStorage
     let meds = JSON.parse(localStorage.getItem("medications")) || [];
 
-    meds.push({
-        name: document.getElementById("medName").value,
-        dose: document.getElementById("medDose").value,
-        time: document.getElementById("medTime").value,
-        freq: document.getElementById("medFreq").value
-    });
+    // Create medication object
+    const medication = {
+        name: name,
+        dose: dose,
+        time: time,
+        frequency: frequency,
+        color: "" // optional
+    };
 
+    // Save to localStorage
+    meds.push(medication);
     localStorage.setItem("medications", JSON.stringify(meds));
 
-    alert("Medication Saved!");
-    location.href = "index.html";
+    alert("Medication saved successfully!");
+    window.location.href = "index.html"; // redirect back to home page
 }
+
 
 
 // Save Vaccine
 function saveVaccine() {
-    let vaccines = JSON.parse(localStorage.getItem("vaccines")) || [];
+    const name = document.getElementById('vName').value.trim();
+    const date = document.getElementById('vDate').value.trim();
+    const notes = document.getElementById('vNotes').value.trim();
 
-    vaccines.push({
-        name: document.getElementById("vName").value,
-        date: document.getElementById("vDate").value,
-        notes: document.getElementById("vNotes").value
-    });
+    if (!name || !date) {
+        alert("Please enter Vaccine Name and Date.");
+        return;
+    }
 
-    localStorage.setItem("vaccines", JSON.stringify(vaccines));
-    alert("Vaccination Saved!");
-    location.href = "index.html";
+    let vacc = JSON.parse(localStorage.getItem("vaccines")) || [];
+
+    const vaccine = {
+        name: name,
+        date: date,
+        notes: notes
+    };
+
+    vacc.push(vaccine);
+    localStorage.setItem("vaccines", JSON.stringify(vacc));
+
+    alert("Vaccination saved!");
+    window.location.href = "index.html";
 }
+
+
 
 // Load Medications
 function loadMedications() {
@@ -56,7 +86,7 @@ function loadVaccines() {
     container.innerHTML = "";
 
     vaccines.forEach(v => {
-        container.innerHTML += `<div>${v.name} - ${v.date} - ${v.notes}</div>`;
+        container.innerHTML += `<div>${v.name} - ${v.date} - ${v.dose}</div>`;
     });
 }
 
