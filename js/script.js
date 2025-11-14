@@ -75,18 +75,24 @@ function startReminderCheck() {
         const minutes = String(now.getMinutes()).padStart(2,'0');
         const currentTime = `${hours}:${minutes}`;
 
+        // MEDICATIONS
         let meds = JSON.parse(localStorage.getItem("medications")) || [];
         meds.forEach(m => {
             if (m.time === currentTime) {
-                sendNotification("Medicine Reminder", `Time to take: ${m.name} (${m.dose})`);
+                const msg = `Time to take: ${m.name} (${m.dose})`;
+                sendNotification("Medicine Reminder", msg);
+                sendSMS(msg); // <-- SMS call added
             }
         });
 
+        // VACCINES
         let vacc = JSON.parse(localStorage.getItem("vaccines")) || [];
         vacc.forEach(v => {
-            const today = now.toISOString().split('T')[0]; // YYYY-MM-DD
+            const today = now.toISOString().split('T')[0];
             if (v.date === today) {
-                sendNotification("Vaccine Reminder", `Today: ${v.name}`);
+                const msg = `Vaccine Reminder: ${v.name} today`;
+                sendNotification("Vaccine Reminder", msg);
+                sendSMS(msg); // <-- SMS call added
             }
         });
     }
@@ -95,3 +101,4 @@ function startReminderCheck() {
     checkReminders();
     setInterval(checkReminders, 60000);
 }
+
