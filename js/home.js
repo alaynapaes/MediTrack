@@ -1,5 +1,4 @@
 window.addEventListener('DOMContentLoaded', () => {
-    // Load data from localStorage
     let meds = JSON.parse(localStorage.getItem("medications")) || [];
     let vacc = JSON.parse(localStorage.getItem("vaccines")) || [];
 
@@ -21,7 +20,15 @@ window.addEventListener('DOMContentLoaded', () => {
         const h = document.createElement('h4');
         h.textContent = item.name + (item.dose ? (' — '+item.dose) : '');
         const p = document.createElement('p');
-        p.textContent = item.time ? item.time : (item.date ? item.date : 'No time');
+
+// Show time/date + dose + optional notes
+let info = '';
+if(item.time) info += `Time: ${item.time}`;
+if(item.dose) info += ` | Dose: ${item.dose}`;
+if(item.notes) info += ` | Notes: ${item.notes}`;
+
+p.textContent = info || (item.date ? item.date : 'No time');
+
 
         body.appendChild(h);
         body.appendChild(p);
@@ -43,83 +50,71 @@ window.addEventListener('DOMContentLoaded', () => {
 
         dismissBtn.addEventListener('click', () => {
             stopAlarm();
-    // 1. MOVE TO HISTORY
-    addToHistory(item, type);
+            addToHistory(item, type);
 
-    // 2. REMOVE FROM CURRENT LIST
-    if(type === 'med') {
-        meds.splice(index, 1);
-        localStorage.setItem('medications', JSON.stringify(meds));
-    } else if(type === 'vac') {
-        vacc.splice(index, 1);
-        localStorage.setItem('vaccines', JSON.stringify(vacc));
-    }
+            if(type === 'med') {
+                meds.splice(index, 1);
+                localStorage.setItem('medications', JSON.stringify(meds));
+            } else if(type === 'vac') {
+                vacc.splice(index, 1);
+                localStorage.setItem('vaccines', JSON.stringify(vacc));
+            }
 
-    // 3. REFRESH UI
-    render();
-});
-
+            render();
+        });
 
         meta.appendChild(dismissBtn);
-
         el.appendChild(pill);
         el.appendChild(body);
         el.appendChild(meta);
 
         return el;
     }
+
     function addToHistory(item, type) {
-    let history = JSON.parse(localStorage.getItem("history")) || [];
-
-    history.push({
-        ...item,
-        type: type,
-        doneAt: new Date().toISOString()
-    });
-
-    localStorage.setItem("history", JSON.stringify(history));
-}
+        let history = JSON.parse(localStorage.getItem("history")) || [];
+        history.push({
+            ...item,
+            type: type,
+            doneAt: new Date().toISOString()
+        });
+        localStorage.setItem("history", JSON.stringify(history));
+    }
 
     function render(){
-        const medList = document.getElementById('medList');
         const now = new Date();
 
-        // Filter upcoming meds (time not passed yet)
-        let upcomingMeds = meds.filter(m => {
-            const [h, min] = m.time.split(':').map(Number);
-            return (h > now.getHours()) || (h === now.getHours() && min >= now.getMinutes());
-        }).sort((a,b) => {
-            // latest to oldest
-            return b.time.localeCompare(a.time);
-        });
+        // Remove expired meds
+        meds = meds.filter(m => new Date(m.endDate) >= now);
+        localStorage.setItem("medications", JSON.stringify(meds));
 
-        if(upcomingMeds.length === 0) {
-            medList.innerHTML = '<div class="empty">No upcoming medications.</div>';
-        } else {
-            medList.innerHTML = '';
-            upcomingMeds.forEach((m, idx) => medList.appendChild(createReminderEl(m, 'med', idx)));
-        }
+        // Remove expired vaccines
+        vacc = vacc.filter(v => new Date(v.endDate || v.date) >= now);
+        localStorage.setItem("vaccines", JSON.stringify(vacc));
+
+        const medList = document.getElementById('medList');
+        let upcomingMeds = meds.filter(m => {
+            const start = new Date(m.startDate);
+            const end = new Date(m.endDate);
+            const [h, min] = m.time.split(':').map(Number);
+            return now >= start && now <= end && (h > now.getHours() || (h === now.getHours() && min >= now.getMinutes()));
+        }).sort((a,b) => b.time.localeCompare(a.time));
+
+        medList.innerHTML = upcomingMeds.length ? '' : '<div class="empty">No upcoming medications.</div>';
+        upcomingMeds.forEach((m, idx) => medList.appendChild(createReminderEl(m, 'med', idx)));
 
         const vacList = document.getElementById('vaccineList');
-
-        // Filter upcoming vaccines (date not passed yet)
         let upcomingVacc = vacc.filter(v => {
             const vDate = new Date(v.date);
             vDate.setHours(0,0,0,0);
             const today = new Date();
             today.setHours(0,0,0,0);
             return vDate >= today;
-        }).sort((a,b) => new Date(b.date) - new Date(a.date)); // latest to oldest
+        }).sort((a,b) => new Date(b.date) - new Date(a.date));
 
-        if(upcomingVacc.length === 0) {
-            vacList.innerHTML = '<div class="empty">No upcoming vaccinations.</div>';
-        } else {
-            vacList.innerHTML = '';
-            upcomingVacc.forEach((v, idx) => vacList.appendChild(createReminderEl(v, 'vac', idx)));
-        }
+        vacList.innerHTML = upcomingVacc.length ? '' : '<div class="empty">No upcoming vaccinations.</div>';
+        upcomingVacc.forEach((v, idx) => vacList.appendChild(createReminderEl(v, 'vac', idx)));
     }
-    
-
 
     render();
 });
