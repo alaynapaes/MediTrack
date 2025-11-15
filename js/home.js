@@ -1,4 +1,60 @@
+function updateStreakDisplay() {
+    const streak = parseInt(localStorage.getItem('streak')) || 0;
+    const streakEl = document.getElementById('streak');
+    if(streakEl) streakEl.textContent = streak;
+}
+
+function handleMedicationDismiss() {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const lastTaken = localStorage.getItem('lastTakenDate');
+
+    if(lastTaken === todayStr) return; // Already counted today
+
+    let streak = parseInt(localStorage.getItem('streak')) || 0;
+    streak++;
+    localStorage.setItem('streak', streak);
+    localStorage.setItem('lastTakenDate', todayStr);
+
+    updateStreakDisplay();
+}
+
+function resetStreakIfMissed() {
+    const lastTaken = localStorage.getItem('lastTakenDate');
+    if(!lastTaken) return;
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    if(lastTaken < yesterdayStr) {
+        localStorage.setItem('streak', 0);
+        updateStreakDisplay();
+    }
+}
+
+function updateBadge() {
+    const streak = parseInt(localStorage.getItem('streak')) || 0;
+    const badgeEl = document.getElementById('badge');
+    if (!badgeEl) return;
+
+    let badgeName = "No Badge";
+
+    if (streak >= 30) badgeName = "Master";
+    else if (streak >= 15) badgeName = "Strong Habit";
+    else if (streak >= 8) badgeName = "Dedicated";
+    else if (streak >= 4) badgeName = "Consistent";
+    else if (streak >= 1) badgeName = "Beginner";
+
+    badgeEl.textContent = badgeName;
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+
+    resetStreakIfMissed();
+    updateStreakDisplay();
+    updateBadge();
+
     let meds = JSON.parse(localStorage.getItem("medications")) || [];
     let vacc = JSON.parse(localStorage.getItem("vaccines")) || [];
 
@@ -40,6 +96,8 @@ window.addEventListener('DOMContentLoaded', () => {
         dismissBtn.addEventListener('click', () => {
             stopAlarm && stopAlarm();
 
+            handleMedicationDismiss();
+            updateBadge();
             // Move to history
             addToHistory(item, type);
 
@@ -83,7 +141,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const upcomingVacCount = vacc.length;
 
         document.getElementById('todayCount').textContent = todayMedCount;
-        document.getElementById('upcomingCount').textContent = upcomingMedCount + upcomingVacCount;
+        document.getElementById('upcomingCount').textContent = upcomingVacCount;
     }
 
     function render() {
