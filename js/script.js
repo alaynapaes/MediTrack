@@ -4,6 +4,21 @@ window.onload = function () {
     startReminderCheck();
 };
 
+let alarmAudio;
+
+function playAlarm() {
+    alarmAudio = new Audio("alarm.mp3");
+    alarmAudio.loop = true; // keeps playing until stopped
+    alarmAudio.play().catch(err => console.log("Audio error:", err));
+}
+
+function stopAlarm() {
+    if (alarmAudio) {
+        alarmAudio.pause();
+        alarmAudio.currentTime = 0;
+    }
+}
+
 // Save Medication
 function saveMedication() {
     const name = document.getElementById('medName').value.trim();
@@ -52,7 +67,9 @@ function requestNotificationPermission() {
 
 function sendNotification(title, body) {
     if (Notification.permission === "granted") {
-        new Notification(title, { body });
+        const notification = new Notification(title, { body });
+        notification.onclick = () => stopAlarm();
+        notification.onclose = () => stopAlarm(); // optional: stop when closed
     }
 }
 
@@ -95,30 +112,36 @@ function startReminderCheck() {
         meds.forEach(m => {
             if (m.time === currentTime) {
                 const msg = `Time to take: ${m.name} (${m.dose})`;
-
-                // Desktop notification
                 sendNotification("Medicine Reminder", msg);
-
-                // SMS
                 sendSMS(msg);
-
-                // Email
                 sendEmailNotification("Medicine Reminder", msg);
+                playAlarm(); 
             }
         });
 
-        // VACCINES
-        let vacc = JSON.parse(localStorage.getItem("vaccines")) || [];
-        vacc.forEach(v => {
-            const today = now.toISOString().split('T')[0];
-            if (v.date === today) {
-                const msg = `Vaccine Reminder: ${v.name} today`;
+    // VACCINES
+let vacc = JSON.parse(localStorage.getItem("vaccines")) || [];
+vacc.forEach(v => {
+    const today = new Date();
+    const vaccineDate = new Date(v.date); // user-selected date
 
-                sendNotification("Vaccine Reminder", msg);
-                sendSMS(msg);
-                sendEmailNotification("Vaccine Reminder", msg);
-            }
-        });
+    // Subtract 1 day from vaccineDate
+    vaccineDate.setDate(vaccineDate.getDate() - 1);
+
+    // Check if reminder is for today
+    if (
+        today.getFullYear() === vaccineDate.getFullYear() &&
+        today.getMonth() === vaccineDate.getMonth() &&
+        today.getDate() === vaccineDate.getDate()
+    ) {
+        const msg = `Vaccine Reminder: ${v.name} tomorrow`;
+        sendNotification("Vaccine Reminder", msg);
+        sendSMS(msg);
+        sendEmailNotification("Vaccine Reminder", msg);
+        playAlarm(); // if you added the alarm
+    }
+});
+
     }
 
     // check immediately and then every minute
