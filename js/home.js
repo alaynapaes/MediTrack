@@ -53,8 +53,13 @@ p.textContent = info || (item.date ? item.date : 'No time');
             addToHistory(item, type);
 
             if(type === 'med') {
-                meds.splice(index, 1);
-                localStorage.setItem('medications', JSON.stringify(meds));
+    const todayStr = new Date().toISOString().split('T')[0];
+    // mark today as taken
+    if (!item.takenDates) item.takenDates = [];
+    item.takenDates.push(todayStr);
+
+    localStorage.setItem('medications', JSON.stringify(meds));
+
             } else if(type === 'vac') {
                 vacc.splice(index, 1);
                 localStorage.setItem('vaccines', JSON.stringify(vacc));
@@ -97,8 +102,13 @@ p.textContent = info || (item.date ? item.date : 'No time');
             const start = new Date(m.startDate);
             const end = new Date(m.endDate);
             const [h, min] = m.time.split(':').map(Number);
-            return now >= start && now <= end && (h > now.getHours() || (h === now.getHours() && min >= now.getMinutes()));
-        }).sort((a,b) => b.time.localeCompare(a.time));
+            const todayStr = new Date().toISOString().split('T')[0];
+                return (
+        new Date() >= start && new Date() <= end &&
+        !m.takenDates?.includes(todayStr) &&
+        (h > now.getHours() || (h === now.getHours() && min >= now.getMinutes()))
+    );
+});
 
         medList.innerHTML = upcomingMeds.length ? '' : '<div class="empty">No upcoming medications.</div>';
         upcomingMeds.forEach((m, idx) => medList.appendChild(createReminderEl(m, 'med', idx)));

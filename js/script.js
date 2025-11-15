@@ -34,8 +34,17 @@ function saveMedication() {
     endDate.setDate(startDate.getDate() + duration);
 
     let meds = JSON.parse(localStorage.getItem("medications")) || [];
-    meds.push({ name, dose, time, frequency, startDate: startDate.toISOString(), endDate: endDate.toISOString(), color: "" });
-    localStorage.setItem("medications", JSON.stringify(meds));
+meds.push({ 
+    name, 
+    dose, 
+    time, 
+    frequency, 
+    startDate: startDate.toISOString(), 
+    endDate: endDate.toISOString(), 
+    color: "",
+    takenDates: [] // <-- add this here
+});
+localStorage.setItem("medications", JSON.stringify(meds));
 
     alert("Medication saved!");
     window.location.href = "index.html";
