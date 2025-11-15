@@ -154,4 +154,38 @@
 </footer>
 
 </body>
+
+<script>
+function saveMedication() {
+    const name = document.getElementById('medName').value.trim();
+    const dose = document.getElementById('medDose').value.trim();
+    const time = document.getElementById('medTime').value;
+    const frequency = document.getElementById('medFreq').value;
+
+    if (!name || !time) {
+        alert("Please enter medicine name and time");
+        return;
+    }
+
+    let meds = JSON.parse(localStorage.getItem("medications")) || [];
+
+    meds.push({
+        name,
+        dose,
+        time,
+        frequency,
+        color: '#9ad3d6'
+    });
+
+    localStorage.setItem("medications", JSON.stringify(meds));
+
+    alert("Medication added successfully!");
+    // Clear inputs for next entry
+    document.getElementById('medName').value = '';
+    document.getElementById('medDose').value = '';
+    document.getElementById('medTime').value = '';
+    document.getElementById('medFreq').value = '';
+}
+</script>
+
 </html>
