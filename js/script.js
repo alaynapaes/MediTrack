@@ -65,7 +65,7 @@ function sendSMS(message) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone, message })
     }).then(res => console.log("SMS sent"))
-      .catch(err => console.error("SMS error:", err));
+        .catch(err => console.error("SMS error:", err));
 }
 
 function sendEmailNotification(subject, message) {

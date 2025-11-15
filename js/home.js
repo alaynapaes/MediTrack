@@ -26,8 +26,8 @@ window.addEventListener('DOMContentLoaded', () => {
         body.appendChild(h);
         body.appendChild(p);
 
-        const meta = document.createElement('div'); 
-        meta.className = 'rem-meta'; 
+        const meta = document.createElement('div');
+        meta.className = 'rem-meta';
 
         const dismissBtn = document.createElement('button');
         dismissBtn.textContent = 'Dismiss';
@@ -42,15 +42,23 @@ window.addEventListener('DOMContentLoaded', () => {
         `;
 
         dismissBtn.addEventListener('click', () => {
-            if(type === 'med') {
-                meds.splice(index, 1);
-                localStorage.setItem('medications', JSON.stringify(meds));
-            } else if(type === 'vac') {
-                vacc.splice(index, 1);
-                localStorage.setItem('vaccines', JSON.stringify(vacc));
-            }
-            render();
-        });
+
+    // 1. MOVE TO HISTORY
+    addToHistory(item, type);
+
+    // 2. REMOVE FROM CURRENT LIST
+    if(type === 'med') {
+        meds.splice(index, 1);
+        localStorage.setItem('medications', JSON.stringify(meds));
+    } else if(type === 'vac') {
+        vacc.splice(index, 1);
+        localStorage.setItem('vaccines', JSON.stringify(vacc));
+    }
+
+    // 3. REFRESH UI
+    render();
+});
+
 
         meta.appendChild(dismissBtn);
 
@@ -60,6 +68,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
         return el;
     }
+    function addToHistory(item, type) {
+    let history = JSON.parse(localStorage.getItem("history")) || [];
+
+    history.push({
+        ...item,
+        type: type,
+        doneAt: new Date().toISOString()
+    });
+
+    localStorage.setItem("history", JSON.stringify(history));
+}
 
     function render(){
         const medList = document.getElementById('medList');
@@ -99,6 +118,8 @@ window.addEventListener('DOMContentLoaded', () => {
             upcomingVacc.forEach((v, idx) => vacList.appendChild(createReminderEl(v, 'vac', idx)));
         }
     }
+    
+
 
     render();
 });
