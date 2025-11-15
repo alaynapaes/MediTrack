@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MediTrack — Settings</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <script defer src="js/settings.js"></script>
+    <script defer src="js/header.js"></script>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Main Content -->
+    <main>
+        <section class="content">
+            <h2 class="page-title">Settings</h2>
+            <p class="page-desc">Manage your preferences and app behavior.</p>
+
+            <div class="settings-container">
+
+                <!-- Notifications info -->
+                <div class="setting-card">
+                    <h3>Notifications</h3>
+                    <p>Reminder notifications will be sent according to your device/browser settings.</p>
+                </div>
+
+                <!-- SMS -->
+                <div class="setting-card">
+                    <h3>SMS Alerts</h3>
+                    <p>Turn SMS reminders on or off.</p>
+                    <label class="switch">
+                        <input type="checkbox" id="smsToggle" onchange="toggleSMS()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- Audio Control -->
+                <div class="setting-card">
+                    <h3>Reminder Sound</h3>
+                    <p>Adjust the volume for reminder sounds. You can mute or increase/decrease it here.</p>
+                    <audio id="reminderAudio" src="audio.mp3"></audio>
+
+                    <!-- Volume slider -->
+                    <div style="margin-top: 10px;">
+                        <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                        <span id="volumeValue">50%</span>
+                    </div>
+
+                    <label class="switch" style="margin-top: 10px;">
+                        <input type="checkbox" id="audioToggle" onchange="toggleAudio()">
+                        <span class="slider"></span>
+                    </label>
+                    <span style="margin-left: 10px;">Enable Audio</span>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>&copy; 2025 MediTrack. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="add_medication.html">Add Medication</a>
+                <a href="add_vaccine.html">Add Vaccine</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Toggle SMS setting
+        function toggleSMS() {
+            const smsEnabled = document.getElementById('smsToggle').checked;
+            localStorage.setItem("smsEnabled", smsEnabled);
+            alert("SMS reminders " + (smsEnabled ? "enabled" : "disabled"));
+        }
+
+        // Toggle Audio
+        function toggleAudio() {
+            const audioEnabled = document.getElementById('audioToggle').checked;
+            localStorage.setItem("audioEnabled", audioEnabled);
+        }
+
+        // Load toggle states and volume
+        document.addEventListener("DOMContentLoaded", () => {
+            // SMS toggle
+            const smsState = localStorage.getItem("smsEnabled") === "true";
+            document.getElementById('smsToggle').checked = smsState;
+
+            // Audio toggle
+            const audioState = localStorage.getItem("audioEnabled") === "true";
+            document.getElementById('audioToggle').checked = audioState;
+
+            // Volume slider
+            const slider = document.getElementById('volumeSlider');
+            const audio = document.getElementById('reminderAudio');
+            const savedVolume = localStorage.getItem("audioVolume");
+
+            if (savedVolume !== null) {
+                slider.value = savedVolume;
+                audio.volume = savedVolume / 100;
+                document.getElementById('volumeValue').textContent = savedVolume + "%";
+            }
+
+            // Update volume in real-time
+            slider.addEventListener('input', () => {
+                const value = slider.value;
+                audio.volume = value / 100;
+                document.getElementById('volumeValue').textContent = value + "%";
+                localStorage.setItem("audioVolume", value);
+            });
+        });
+    </script>
+
+    <!-- Switch styling -->
+    <style>
+        .settings-container {
+            max-width: 700px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .setting-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .primary {
+            background: var(--accent);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* Toggle switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+            margin-top: 10px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ccc;
+            border-radius: 26px;
+            transition: .3s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: .3s;
+        }
+
+        input:checked+.slider {
+            background: var(--accent);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+
+</body>
+
+</html>

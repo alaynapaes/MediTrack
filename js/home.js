@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 window.addEventListener('DOMContentLoaded', () => {
     // Load data from localStorage
     let meds = JSON.parse(localStorage.getItem("medications")) || [];
