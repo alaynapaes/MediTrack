@@ -43,11 +43,12 @@ window.addEventListener('DOMContentLoaded', () => {
             // Move to history
             addToHistory(item, type);
 
-            if(type === 'med') {
-                meds.splice(index, 1);
+            // Remove from array
+            if (type === 'med') {
+                meds = meds.filter(m => m !== item);
                 localStorage.setItem('medications', JSON.stringify(meds));
-            } else if(type === 'vac') {
-                vacc.splice(index, 1);
+            } else {
+                vacc = vacc.filter(v => v !== item);
                 localStorage.setItem('vaccines', JSON.stringify(vacc));
             }
 
@@ -87,16 +88,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     function render() {
         const medList = document.getElementById('medList');
-        let upcomingMeds = meds.filter(m => {
-            const start = new Date(m.startDate);
-            const end = new Date(m.endDate);
-            const [h, min] = m.time.split(':').map(Number);
-            return now >= start && now <= end && (h > now.getHours() || (h === now.getHours() && min >= now.getMinutes()));
-        }).sort((a,b) => b.time.localeCompare(a.time));
-
-        medList.innerHTML = upcomingMeds.length ? '' : '<div class="empty">No upcoming medications.</div>';
-        upcomingMeds.forEach((m, idx) => medList.appendChild(createReminderEl(m, 'med', idx)));
-
         const vacList = document.getElementById('vaccineList');
 
         medList.innerHTML = '';
