@@ -57,7 +57,10 @@ function sendNotification(title, body) {
 }
 
 function sendSMS(message) {
-    // Replace with actual user phone
+
+    const smsEnabled = localStorage.getItem("smsEnabled") === "true";
+    if (!smsEnabled) return;
+    
     const phone = "+917758047172";
 
     fetch("http://localhost:3000/send-sms", {
