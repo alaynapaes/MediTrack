@@ -26,8 +26,8 @@ window.addEventListener('DOMContentLoaded', () => {
         body.appendChild(h);
         body.appendChild(p);
 
-        const meta = document.createElement('div'); 
-        meta.className = 'rem-meta'; 
+        const meta = document.createElement('div');
+        meta.className = 'rem-meta';
 
         const dismissBtn = document.createElement('button');
         dismissBtn.textContent = 'Dismiss';
@@ -41,40 +41,24 @@ window.addEventListener('DOMContentLoaded', () => {
             cursor: pointer;
         `;
 
-<<<<<<< HEAD
-    dismissBtn.addEventListener('click', () => {
+        dismissBtn.addEventListener('click', () => {
+
+    // 1. MOVE TO HISTORY
+    addToHistory(item, type);
+
+    // 2. REMOVE FROM CURRENT LIST
     if(type === 'med') {
-        // Remove from active meds
-        const removedMed = meds.splice(index, 1)[0];
+        meds.splice(index, 1);
         localStorage.setItem('medications', JSON.stringify(meds));
-
-        // Save to history
-        let history = JSON.parse(localStorage.getItem('history')) || [];
-        history.push(removedMed);
-        localStorage.setItem('history', JSON.stringify(history));
-
     } else if(type === 'vac') {
-        // You can do the same for vaccines if you want history for them
         vacc.splice(index, 1);
         localStorage.setItem('vaccines', JSON.stringify(vacc));
     }
 
+    // 3. REFRESH UI
     render();
 });
 
-
-=======
-        dismissBtn.addEventListener('click', () => {
-            if(type === 'med') {
-                meds.splice(index, 1);
-                localStorage.setItem('medications', JSON.stringify(meds));
-            } else if(type === 'vac') {
-                vacc.splice(index, 1);
-                localStorage.setItem('vaccines', JSON.stringify(vacc));
-            }
-            render();
-        });
->>>>>>> 2b75c5769aa17a80e49ffed0aa41159df3d6c0ca
 
         meta.appendChild(dismissBtn);
 
@@ -84,61 +68,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
         return el;
     }
+    function addToHistory(item, type) {
+    let history = JSON.parse(localStorage.getItem("history")) || [];
+
+    history.push({
+        ...item,
+        type: type,
+        doneAt: new Date().toISOString()
+    });
+
+    localStorage.setItem("history", JSON.stringify(history));
+}
 
     function render(){
-<<<<<<< HEAD
-    const medList = document.getElementById('medList');
-    if(meds.length === 0) {
-        medList.innerHTML = '<div class="empty">No medications scheduled. Add one to get started </div>';
-    } else {
-        medList.innerHTML = '';
-        meds.forEach((m, idx) => medList.appendChild(createReminderEl(m, 'med', idx)));
-    }
-
-    const vacList = document.getElementById('vaccineList');
-    if(vacc.length === 0) {
-        vacList.innerHTML = '<div class="empty">No vaccinations scheduled. Add one to get started </div>';
-    } else {
-        vacList.innerHTML = '';
-        vacc.forEach((v, idx) => vacList.appendChild(createReminderEl(v, 'vac', idx)));
-    }
-    loadHistory();
-}
-function loadHistory() {
-    const historyList = document.getElementById('historyList');
-    const history = JSON.parse(localStorage.getItem('history')) || [];
-
-    if(!historyList) return; // skip if section missing
-    historyList.innerHTML = '';
-
-    if(history.length === 0) {
-        historyList.innerHTML = '<div class="empty">No history yet.</div>';
-        return;
-    }
-
-    history.forEach(med => {
-        const el = document.createElement('div');
-        el.className = 'reminder history-item';
-
-        const pill = document.createElement('div');
-        pill.className = 'pill';
-        pill.textContent = med.name.split(' ')[0];
-
-        const body = document.createElement('div');
-        body.className = 'rem-body';
-        const h = document.createElement('h4');
-        h.textContent = `${med.name} — ${med.dose}`;
-        const p = document.createElement('p');
-        p.textContent = med.time || 'No time';
-        body.appendChild(h);
-        body.appendChild(p);
-
-        el.appendChild(pill);
-        el.appendChild(body);
-        historyList.appendChild(el);
-    });
-}
-=======
         const medList = document.getElementById('medList');
         const now = new Date();
 
@@ -150,7 +92,6 @@ function loadHistory() {
             // latest to oldest
             return b.time.localeCompare(a.time);
         });
->>>>>>> 2b75c5769aa17a80e49ffed0aa41159df3d6c0ca
 
         if(upcomingMeds.length === 0) {
             medList.innerHTML = '<div class="empty">No upcoming medications. Add one to get started ✨</div>';
@@ -177,6 +118,8 @@ function loadHistory() {
             upcomingVacc.forEach((v, idx) => vacList.appendChild(createReminderEl(v, 'vac', idx)));
         }
     }
+    
+
 
     render();
 });

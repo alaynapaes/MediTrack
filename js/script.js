@@ -56,27 +56,6 @@ function sendNotification(title, body) {
     }
 }
 
-<<<<<<< HEAD
-function startReminderCheck() {
-    checkReminders(); // check immediately
-
-    setInterval(checkReminders, 60000); // then every minute
-}
-
-function checkReminders() {
-    let now = new Date();
-    let currentTime = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
-
-    let meds = JSON.parse(localStorage.getItem("medications")) || [];
-    meds.forEach(m => {
-        if (!m.notified && currentTime >= m.time) {
-            sendNotification("Medicine Reminder", `Time to take: ${m.name} (${m.dose})`);
-            m.notified = true;
-        }
-    });
-    localStorage.setItem("medications", JSON.stringify(meds));
-}
-=======
 function sendSMS(message) {
     // Replace with actual user phone
     const phone = "+917758047172";
@@ -86,7 +65,7 @@ function sendSMS(message) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone, message })
     }).then(res => console.log("SMS sent"))
-      .catch(err => console.error("SMS error:", err));
+        .catch(err => console.error("SMS error:", err));
 }
 
 function startReminderCheck() {
@@ -123,4 +102,3 @@ function startReminderCheck() {
     setInterval(checkReminders, 60000);
 }
 
->>>>>>> 2b75c5769aa17a80e49ffed0aa41159df3d6c0ca
