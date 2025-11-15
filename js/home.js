@@ -94,7 +94,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 
         if(upcomingMeds.length === 0) {
-            medList.innerHTML = '<div class="empty">No upcoming medications. Add one to get started ✨</div>';
+            medList.innerHTML = '<div class="empty">No upcoming medications. Add one to get started.</div>';
         } else {
             medList.innerHTML = '';
             upcomingMeds.forEach((m, idx) => medList.appendChild(createReminderEl(m, 'med', idx)));
@@ -112,7 +112,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }).sort((a,b) => new Date(b.date) - new Date(a.date)); // latest to oldest
 
         if(upcomingVacc.length === 0) {
-            vacList.innerHTML = '<div class="empty">No upcoming vaccinations. Add one to get started 🌼</div>';
+            vacList.innerHTML = '<div class="empty">No upcoming vaccinations. Add one to get started.</div>';
         } else {
             vacList.innerHTML = '';
             upcomingVacc.forEach((v, idx) => vacList.appendChild(createReminderEl(v, 'vac', idx)));
