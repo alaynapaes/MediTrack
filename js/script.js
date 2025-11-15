@@ -68,6 +68,18 @@ function sendSMS(message) {
       .catch(err => console.error("SMS error:", err));
 }
 
+function sendEmailNotification(subject, message) {
+    const email = "user-email@example.com"; // Replace with the actual user's email
+
+    fetch("http://localhost:3000/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, subject, message })
+    })
+    .then(res => console.log("Email sent"))
+    .catch(err => console.error("Email error:", err));
+}
+
 function startReminderCheck() {
     function checkReminders() {
         const now = new Date();
@@ -80,8 +92,15 @@ function startReminderCheck() {
         meds.forEach(m => {
             if (m.time === currentTime) {
                 const msg = `Time to take: ${m.name} (${m.dose})`;
+
+                // Desktop notification
                 sendNotification("Medicine Reminder", msg);
-                sendSMS(msg); // <-- SMS call added
+
+                // SMS
+                sendSMS(msg);
+
+                // Email
+                sendEmailNotification("Medicine Reminder", msg);
             }
         });
 
@@ -91,8 +110,10 @@ function startReminderCheck() {
             const today = now.toISOString().split('T')[0];
             if (v.date === today) {
                 const msg = `Vaccine Reminder: ${v.name} today`;
+
                 sendNotification("Vaccine Reminder", msg);
-                sendSMS(msg); // <-- SMS call added
+                sendSMS(msg);
+                sendEmailNotification("Vaccine Reminder", msg);
             }
         });
     }
@@ -101,4 +122,5 @@ function startReminderCheck() {
     checkReminders();
     setInterval(checkReminders, 60000);
 }
+
 

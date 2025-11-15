@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const twilio = require('twilio');
+const nodemailer = require('nodemailer');
 
 const app = express();
 app.use(cors());
@@ -57,3 +58,48 @@ cron.schedule('* * * * *', () => {
         }
     });
 });
+
+// Create transporter
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // TLS
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+// Function to send email
+function sendEmail(to, subject, text) {
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to,
+        subject,
+        text
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+            console.error("Error sending email:", err);
+        } else {
+            console.log("Email sent:", info.response);
+        }
+    });
+}
+
+app.post('/send-email', (req, res) => {
+    const { email, subject, message } = req.body;
+
+    if (!email || !subject || !message) {
+        return res.status(400).json({ 
+            success: false, 
+            error: "Email, subject, and message are required" 
+        });
+    }
+
+    sendEmail(email, subject, message);
+    res.json({ success: true });
+});
+
+
