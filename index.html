@@ -13,7 +13,33 @@
 <body>
 
   <!-- Header -->
-  <div id="header-container"></div>
+  <div class="navbar">
+  <div class="brand">
+    <div class="logo-circle">MT</div>
+    <div>
+      <div style="font-weight:700">
+        <a href="index.html" style="text-decoration:none; color:inherit;">MediTrack</a>
+      </div>
+      <div style="font-size:11px;color:rgba(0,0,0,0.6)">Medication & Vaccination Reminder</div>
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <div class="stat">
+    <h3 id="streak">0</h3>
+    <p>Daily Streak</p>
+</div>
+
+<div >
+    <div id="badge" class="badge-shield">No Badge</div>
+    
+</div>
+
+    <button class="btn-ghost" onclick="location.href='history.html'">History</button>
+    <button class="btn-ghost" onclick="location.href='calendar.html'">Calendar</button>
+    <button class="btn-ghost" onclick="location.href='settings.html'">Settings</button>
+  </div>
+</div>
 
   <!-- Hero Section -->
   <main>
@@ -31,11 +57,11 @@
       <div class="hero-right">
         <div class="stat">
           <h3 id="todayCount">0</h3>
-          <p>Reminders today</p>
+          <p>Reminders Today</p>
         </div>
         <div class="stat">
           <h3 id="upcomingCount">0</h3>
-          <p>Upcoming items</p>
+          <p>Upcoming Vaccinations</p>
         </div>
       </div>
     </section>

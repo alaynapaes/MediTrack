@@ -6,6 +6,7 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js'></script>
      <link rel="stylesheet" href="css/style.css">
         <script defer src="js/header.js"></script>
+        <script defer src="js/calendar.js"></script>
 
         <style>
       /* Make calendar smaller and centered */
@@ -41,48 +42,74 @@
 
         // Load medications and vaccines from localStorage
         const meds = JSON.parse(localStorage.getItem("medications")) || [];
-        const vaccs = JSON.parse(localStorage.getItem("vaccines")) || [];
-
-        // Convert meds into calendar events
-     const medEvents = meds.map(med => {
-    const startDate = med.startDate ? new Date(med.startDate) : new Date();
-    const endDate = med.endDate ? new Date(med.endDate) : startDate;
-
+  
+const medEvents = [];
+meds.forEach(med => {
+    // Base date: use stored startDate or default to today
+    const baseDate = med.startDate ? new Date(med.startDate) : new Date();
+    const duration = med.duration || 1;
     const titleParts = [med.name];
     if (med.dose) titleParts.push(`— ${med.dose}`);
     if (med.notes) titleParts.push(`(${med.notes})`);
-
-    return {
-        title: titleParts.join(' '),
-        start: startDate.toISOString().split('T')[0],
-        end: new Date(endDate.getTime() + 24*60*60*1000).toISOString().split('T')[0], // FullCalendar end is exclusive
-        allDay: true,
-        color: '#9ad3d6',
-        textColor: 'black'
-    };
+    const title = titleParts.join(' ');
+    if (med.frequency === "Daily") {
+        // One event each day for `duration` days
+        for (let i = 0; i < duration; i++) {
+            let eventDate = new Date(baseDate);
+            eventDate.setDate(baseDate.getDate() + i);
+            medEvents.push({
+                title: title,
+                start: eventDate.toISOString().split('T')[0],
+                allDay: true,
+                color: med.color || '#9ad3d6',
+                textColor: 'black'
+            });
+        }
+    } 
+    else if (med.frequency === "Weekly") {
+        // One event every 7 days, up to `duration` days
+        for (let i = 0; i < duration; i += 7) {
+            let eventDate = new Date(baseDate);
+            eventDate.setDate(baseDate.getDate() + i);
+            medEvents.push({
+                title: title,
+                start: eventDate.toISOString().split('T')[0],
+                allDay: true,
+                color: med.color || '#9ad3d6',
+                textColor: 'black'
+            });
+        }
+    } 
+    else {
+        // If no frequency, treat as single event
+        medEvents.push({
+            title: title,
+            start: baseDate.toISOString().split('T')[0],
+            allDay: true,
+            color: med.color || '#9ad3d6',
+            textColor: 'black'
+        });
+    }
 });
-
-        // Convert vaccines into calendar events
-       const vaccEvents = vaccs.map(v => {
-    const vaccineDate = new Date(v.date);
-
-    const titleParts = [v.name];
-    if (v.notes) titleParts.push(`(${v.notes})`);
-
+// Vaccines events (unchanged)
+const vaccs = JSON.parse(localStorage.getItem("vaccines")) || [];
+const vaccEvents = vaccs.map(v => {
+    const date = new Date(v.date);
+    const parts = [v.name];
+    if (v.notes) parts.push(`(${v.notes})`);
     return {
-        title: titleParts.join(' '),
-        start: vaccineDate.toISOString().split('T')[0],
+        title: parts.join(' '),
+        start: date.toISOString().split('T')[0],
         allDay: true,
         color: '#ffd6e0',
         textColor: 'black'
     };
 });
-
-
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          events: [...medEvents, ...vaccEvents]
-        });
+// Initialize calendar with combined events
+var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: [...medEvents, ...vaccEvents]
+});
 
         calendar.render();
       });

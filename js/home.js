@@ -1,35 +1,38 @@
 function updateStreakDisplay() {
     const streak = parseInt(localStorage.getItem('streak')) || 0;
     const streakEl = document.getElementById('streak');
-    if(streakEl) streakEl.textContent = streak;
+    if (streakEl) streakEl.textContent = streak;
 }
 
 function handleMedicationDismiss() {
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
     const lastTaken = localStorage.getItem('lastTakenDate');
 
-    if(lastTaken === todayStr) return; // Already counted today
+    // already counted for today
+    if (lastTaken === today) return;
 
     let streak = parseInt(localStorage.getItem('streak')) || 0;
     streak++;
+
+    localStorage.setItem('lastTakenDate', today);
     localStorage.setItem('streak', streak);
-    localStorage.setItem('lastTakenDate', todayStr);
 
     updateStreakDisplay();
+    updateBadge();
 }
 
 function resetStreakIfMissed() {
     const lastTaken = localStorage.getItem('lastTakenDate');
-    if(!lastTaken) return;
+    if (!lastTaken) return;
 
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
-    if(lastTaken < yesterdayStr) {
+    // If lastTaken is NOT today and NOT yesterday → streak lost
+    if (lastTaken !== today && lastTaken !== yesterday) {
         localStorage.setItem('streak', 0);
         updateStreakDisplay();
+        updateBadge();
     }
 }
 
@@ -50,7 +53,6 @@ function updateBadge() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-
     resetStreakIfMissed();
     updateStreakDisplay();
     updateBadge();
@@ -72,6 +74,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         const h = document.createElement('h4');
         h.textContent = item.name + (item.dose ? (' — ' + item.dose) : '');
+
         const p = document.createElement('p');
         p.textContent = item.time ? item.time : (item.date ? item.date : 'No time');
 
@@ -95,13 +98,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
         dismissBtn.addEventListener('click', () => {
             stopAlarm && stopAlarm();
-
             handleMedicationDismiss();
             updateBadge();
+
             // Move to history
             addToHistory(item, type);
 
-            // Remove from array
+            // Remove from list + save
             if (type === 'med') {
                 meds = meds.filter(m => m !== item);
                 localStorage.setItem('medications', JSON.stringify(meds));
@@ -136,7 +139,10 @@ window.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const todayStr = now.toISOString().split('T')[0];
 
-        const todayMedCount = meds.filter(m => m.time && new Date().toISOString().split('T')[0] === todayStr).length;
+        const todayMedCount = meds.filter(m =>
+            m.time && new Date().toISOString().split('T')[0] === todayStr
+        ).length;
+
         const upcomingMedCount = meds.length;
         const upcomingVacCount = vacc.length;
 

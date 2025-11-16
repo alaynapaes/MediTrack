@@ -4,7 +4,13 @@ function loadHeader() {
     .then(res => res.text())
     .then(data => {
       document.getElementById("header-container").innerHTML = data;
+
+       if (typeof updateStreakDisplay === "function") updateStreakDisplay();
+            if (typeof updateBadge === "function") updateBadge();
     });
 }
 
 window.addEventListener("DOMContentLoaded", loadHeader);
+
+
+
